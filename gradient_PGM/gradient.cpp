@@ -54,6 +54,15 @@ int main(int argc, char* argv[]){
 	i.writePGM(out_p,true);
 
 	return EXIT_SUCCESS;
-
-
 }
+
+/*
+NOTE:
+per la scrittura in plain devo fare una write; poichè devo fare un cast per ogni elemento del vettore matrix,
+mi conviene fare una funzione che mi casta il primo elemento ed un altra che mi dice quanti byte devo scrivere.
+DEVO USARE LA WRITE PERCHè OGNI LIVELLO DI GRIGIO è RAPPRESENTATO IN BINARIO CON UN BYTE (lo stream era stato
+aperto in ios: binary).
+
+Per la scrittura in formato plain, VISTO CHE I VALORI DELLA MATRICE SONO RAPPRESENTATI COME UNA SEQUENZA DI
+CARATTERI ASCII SEGUITI DA SPAZIO, POSSO USARE L'OPERATORE >> E UN CAST AD INT OPPURE ITERATORI.
+*/
