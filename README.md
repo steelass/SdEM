@@ -14,3 +14,5 @@ Sistemi di Elaborazione Multimediale
 2016 - 05 - 23 -> 05_Frequenze: folder with old project having some problems with indexing using chars
 
 2016 - 05 -25 ->mdct-Alle: audio coding, with the application of the mdct. Have to try to do on my own.
+
+2016 - 06 - 03 ->PPM: add ppm.cpp where I read and halve the frog with a simple method and with the interpolation.
