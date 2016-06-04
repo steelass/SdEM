@@ -213,7 +213,10 @@ public:
 	imagePPM(size_t h, size_t l,string Descr,bool descrOK = true) : image(h, l)  {
 		if(!descrOK) {
 			string s("P6");
-			s = s + "\n#"+ Descr +"\n";
+			s = s + "\n";
+			if (Descr[0]!='#') 	
+				s + "#";
+			s = s + Descr +"\n";
 			s = s + to_string(l)+ " "+ to_string(h) + "\n255\n";
 			descr = s;
 		}
@@ -238,7 +241,7 @@ public:
 
 };
 
-string readPPM(ifstream& in,size_t &l, size_t &h,vector<RGB> &v) {
+string readPPM(ifstream& in,size_t &l, size_t &h,string &descr,vector<RGB> &v) {
 	string ret("");
 	string s;
 	getline(in,s);
@@ -254,6 +257,7 @@ string readPPM(ifstream& in,size_t &l, size_t &h,vector<RGB> &v) {
 		return "";
 	}
 	ret.append(s + "\n");
+	descr.assign(s);
 	in >> l;
 	ret.append(to_string(l)+ " ");
 	in >> h;
@@ -320,6 +324,7 @@ void DimezzaR(size_t &l,size_t &h,vector<RGB> &in, vector<RGB> &out, bool interp
 	RGB p(0,0,0);
 	if(!interpolazione) {
 		//metodo rustico
+		/*prendo i il pixel e i 3 intorno e ne faccio la media in R, G , B*/
 		for(size_t y=0; y < h-1; y+=2) {
 			for (size_t x = 0; x < l-1; x+=2) {
 				R = (v[y*l+x].getR()+  v[y*l+x+1].getR() + v[(y+1)*l+x].getR() + v[(y+1)*l+x+1].getR())/4 ;
@@ -334,15 +339,16 @@ void DimezzaR(size_t &l,size_t &h,vector<RGB> &in, vector<RGB> &out, bool interp
 	}
 	else{	
 		//interpolazione
+		/*faccio l'interpolazione del pixel e dei 3 pixel intorno assegnado dei pesi*/
 		for(size_t y = 0; y < h; y+=2) {
 			for (size_t x = 0; x < l; x+=2) {
-				if(/*(x == 0 && y == 0) ||(x==0 && y == h-1) || */(x==l-1 && y == 0) || (x==l-1 && y ==h-2)) {
+				if((x==l-1 && y == 0) || (x==l-1 && y ==h-2)) {
 					R = a*v[y*l+x].getR() + b*v[y*l+x].getR() + c*v[y*l+x].getR() + d*v[y*l+x].getR();
 					G = a*v[y*l+x].getG() + b*v[y*l+x].getG() + c*v[y*l+x].getG() + d*v[y*l+x].getG();
 					B = a*v[y*l+x].getB() + b*v[y*l+x].getB() + c*v[y*l+x].getB() + d*v[y*l+x].getB();
 				}
 				else {
-					if(/*x == 0 || y == 0 || */x == l-1 || y == h-1) {
+					if(x == l-1 || y == h-1) {
 
 						if(x ==l-1) {
 							R = a*v[y*l+x].getR() + b*v[(y+1)*l+x].getR() + c*v[y*l+x].getR() + d*v[(y+1)*l+x].getR();
@@ -388,7 +394,8 @@ int main(int argc,char **argv) {
 	size_t l,h;
 	vector<RGB> v;
 	vector<RGB> mezzo;
-	string descr(readPPM(in,l,h,v));
+	string d;
+	string descr(readPPM(in,l,h,d,v));
 
 	cout << "DIMEZZAMENTO RUSTICO\n";
 	DimezzaR(l,h,v,mezzo);
@@ -401,7 +408,7 @@ int main(int argc,char **argv) {
 	l = 375;
 	h = 266;
 	DimezzaR(l,h,v,mezzo,true);
-	imagePPM ii(h,l,"Rana Dimezzata con interpolazione",false);
+	imagePPM ii(h,l,d,false);
 	ii.setMatrix(mezzo);
 	cout << "SCRITTURA PPM\n";
 	ii.writePGM(out2);
