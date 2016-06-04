@@ -1,15 +1,5 @@
-/*
-Si scriva un programma a linea di comando, che accetti come primo parametro il nome di un file in formato PPM e come secondo parametro il nome di un file di output.
-Il programma deve leggere l’immagine in ingresso e salvarla in output con larghezza e altezza dimezzate. 
-Se l’immagine ha larghezza o altezza dispari, replicare l’ultima colonna o riga (o entrambe).
-Utilizzando poi i dati ridotti, ricostruire l’immagine originale raddoppiandone le dimensioni.
-Per la riduzione utilizzate la media di ogni blocco 2×2. 
-Per la ricostruzione provate prima da ogni blocco a fare un blocchetto 2×2 uguale al pixel che state raddoppiando.
-Una ricostruzione più accurata ed esteticamente accettabile si può ottenere utilizzando l’interpolazione
-bilineare. Il concetto alla base è abbastanza semplice e si basa sul considerare i dati che abbiamo ottenuti
-sottocampionando. Consideriamo una porzione di immagine e pensiamo al valore di un pixel come al
-valore ottenuto in uno spazio continuo..*/
-
+#if ! defined IMAGEPPM_H
+#define IMAGEPPM_H
 
 #include <cstdint>
 #include <vector>
@@ -18,80 +8,77 @@ valore ottenuto in uno spazio continuo..*/
 #include <iterator>
 #include <cstring>
 #include <string>
-#include "imagePPM.h"
 
-using namespace std;
-
-/*template <typename T>
+template <typename T>
 class image{
-	size_t height, lenght;
-	vector<T> matrix;
+	std::size_t height, lenght;
+	std::vector<T> matrix;
 
 public:
 	image() {}
-	image(size_t h, size_t l) : height(h), lenght(l), matrix(h * l) {}
-	size_t h() const{ return height; }
-	size_t l() const{ return lenght; }
-	uint8_t& operator()(size_t x, size_t y) {
+	image(std::size_t h, std::size_t l) : height(h), lenght(l), matrix(h * l) {}
+	std::size_t h() const{ return height; }
+	std::size_t l() const{ return lenght; }
+	std::uint8_t& operator()(std::size_t x, std::size_t y) {
 		return matrix[ y * l() + x ];
 	}
-	vector<T>& getMatrix() {
+	std::vector<T>& getMatrix() {
 		return matrix;
 	}
 
-	//FUNZIONI PER WRITE
+	/*FUNZIONI PER WRITE*/
 	char* dataptr() {
 		return reinterpret_cast <char*>(&matrix[0]);
 	}
-	size_t datasize() const {
+	std::size_t datasize() const {
 		return l() * h() * sizeof(T);
 	}
 
-	//ITERATORI
+	/*ITERATORI*/
 	auto begin() -> decltype(matrix.begin()) { return matrix.begin(); }
 	auto begin() const -> decltype(matrix.begin()) { return matrix.begin(); }
 	auto end() -> decltype(matrix.end()) { return matrix.end(); }
 	auto end() const -> decltype(matrix.end()) { return matrix.end(); }
 };
 
-class imagePGM : public image<uint8_t> {
-	string descr;
+class imagePGM : public image<std::uint8_t> {
+	std::string descr;
 
 public:
 	
-	imagePGM(size_t h, size_t l,bool plain = false) : image(h, l), descr("")  {
+	imagePGM(std::size_t h, std::size_t l,bool plain = false) : image(h, l), descr("")  {
 		
 	}
-	imagePGM(size_t h, size_t l,string d,bool plain = false) : image(h, l)  {
+	imagePGM(std::size_t h, std::size_t l,std::string d,bool plain = false) : image(h, l)  {
 		
-		//string s(plain ? "P2":"P5");
-		//s = s + "\n#"+ descr +"\n";
-		//s = s + to_string(l)+ " "+ to_string(h) + "\n255";	
+		/*string s(plain ? "P2":"P5");
+		s = s + "\n#"+ descr +"\n";
+		s = s + to_string(l)+ " "+ to_string(h) + "\n255";*/	
 		descr = d;
 	}
 	
 	//MOLTO IMPORTANTE COSTRUTTORE SOTTOCLASSI TRAMITE COSTRUTTORE SUPERCLASSE
 	//imagePGM(size_t h, size_t l, string descr) : image(h, l), descr(descr) {}
 
-	void setDescr(string d) {
+	void setDescr(std::string d) {
 		descr.clear();
 		descr.append(d);
 	}
 
-	string getDescr() const{
+	std::string getDescr() const{
 		return descr;
 	}
 
 
-	void setMatrix(vector<uint8_t> data){
+	void setMatrix(std::vector<std::uint8_t> data){
 		getMatrix().swap(data);
 
 	}
-	//SCRITTURA PGM:
-	//	- SE PLAIN DEVO SCRIVERE L'INTERO IN ASCII + " "
-	//	- SE NOT PLAIN DEVO SCRIVERE CON UNA WRITE E CAST A PUNTATORE PRIMO INDIRIZZO DI MEMORIA char*
-/
-	void writePGM(ofstream& out, bool plain=false) {
+	/*SCRITTURA PGM:
+		- SE PLAIN DEVO SCRIVERE L'INTERO IN ASCII + " "
+		- SE NOT PLAIN DEVO SCRIVERE CON UNA WRITE E CAST A PUNTATORE PRIMO INDIRIZZO DI MEMORIA char*
+	*/
+	void writePGM(std::ofstream& out, bool plain=false) {
 		
 		out << (plain ? "P2" : "P5") << "\n";
 		out << getDescr();
@@ -100,32 +87,32 @@ public:
 		out << "255" << "\n";
 	
 		if(plain){
-			
+			/*
 			//METODO PIU' RUSTICO
-			//for(size_t i = 0; i < h() ; ++i) {
-			//	for(size_t j = 0; j < l() ; ++j) {
-			//		out << int((j,i)) <<" ";
-			//	}
-			//}
+			for(size_t i = 0; i < h() ; ++i) {
+				for(size_t j = 0; j < l() ; ++j) {
+					out << int((j,i)) <<" ";
+				}
+			}*/
 			for(const auto& x: getMatrix()) {
 				out << int(x) << " ";
 			}
 
 			//USO DI ITERATORI
-			//
-			//copy(begin(),end(),ostream_iterator<int>(out," "));
-			//
+			/*
+			copy(begin(),end(),ostream_iterator<int>(out," "));
+			*/
 
 		}
 		else{
-			//
+			/*
 			//SCRITTURA PIU' RUSTICA
-			//for(size_t i = 0; i < h() ; ++i) {
-			//	for(size_t j = 0; j < l() ; ++j) {
-			//		out.write(reinterpret_cast<const char*>(&(j,i)),1);
-			//	}
-			//}
-			//
+			for(size_t i = 0; i < h() ; ++i) {
+				for(size_t j = 0; j < l() ; ++j) {
+					out.write(reinterpret_cast<const char*>(&(j,i)),1);
+				}
+			}
+			*/
 			out.write(dataptr(),datasize());
 			
 		}
@@ -133,30 +120,30 @@ public:
 
 };
 
-//LETTURA PGM
-string readPGM(ifstream& in,int &l, int &h,vector<uint8_t> &v, bool plain = true) {
-		string ret("");
-		string s;
+/*LETTURA PGM*/
+std::string readPGM(std::ifstream& in,int &l, int &h,std::vector<std::uint8_t> &v, bool plain = true) {
+		std::string ret("");
+		std::string s;
 		//size_t l,h;
 		
 
 		getline(in,s);
 		if(s.compare("P2") && plain ) {
-			cout << "Magic number sbagliato\n";
+			std::cout << "Magic number sbagliato\n";
 			return ret;
 		}
 		else{
 			if(s.compare("P5") && !plain ) {
-				cout << "Magic number sbagliato\n";
+				std::cout << "Magic number sbagliato\n";
 				return ret;
 			}
 		}
 		//ret.append(s + "\n");
 		getline(in,s);
-			//if(s.at(0)!="#"){
-			//	cout << "Commento sbagliato";
-			//	return "";
-			//}
+			/*if(s.at(0)!="#"){
+				cout << "Commento sbagliato";
+				return "";
+			}*/
 		ret.append(s + "\n");
 		in >> l;
 		//ret.append(to_string(l)+ " ");
@@ -165,7 +152,7 @@ string readPGM(ifstream& in,int &l, int &h,vector<uint8_t> &v, bool plain = true
 		getline(in,s);
 		getline(in,s);
 		if (s != "255") {
-			cout << "Terminatore sbagliato\n";
+			std::cout << "Terminatore sbagliato\n";
 			return "";
 		}
 		//ret.append(s + "\n");
@@ -192,18 +179,18 @@ string readPGM(ifstream& in,int &l, int &h,vector<uint8_t> &v, bool plain = true
 	};
 
 class RGB {
-	uint8_t R;
-	uint8_t G;
-	uint8_t B;
+	std::uint8_t R;
+	std::uint8_t G;
+	std::uint8_t B;
 	
 public:
 	RGB() {}
-	RGB(uint8_t r,uint8_t g,uint8_t b) : R(r), G(g), B(b) {}
-	uint8_t getR() { return R;}
-	uint8_t getG() { return G;}
-	uint8_t getB() { return B;}
+	RGB(std::uint8_t r,std::uint8_t g,std::uint8_t b) : R(r), G(g), B(b) {}
+	std::uint8_t getR() { return R;}
+	std::uint8_t getG() { return G;}
+	std::uint8_t getB() { return B;}
 
-	void setRGB(uint8_t r, uint8_t g, uint8_t b) {
+	void setRGB(std::uint8_t r, std::uint8_t g, std::uint8_t b) {
 		R = r;
 		G = g;
 		B = b;
@@ -212,32 +199,32 @@ public:
 };
 
 class imagePPM : public image<RGB> {
-	string descr;
+	std::string descr;
 public:
 	
-	imagePPM(size_t h, size_t l,string Descr,bool descrOK = true) : image(h, l)  {
+	imagePPM(std::size_t h, std::size_t l,std::string Descr,bool descrOK = true) : image(h, l)  {
 		if(!descrOK) {
-			string s("P6");
+			std::string s("P6");
 			s = s + "\n";
 			if (Descr[0]!='#') 	
 				s + "#";
 			s = s + Descr +"\n";
-			s = s + to_string(l)+ " "+ to_string(h) + "\n255\n";
+			s = s + std::to_string(l)+ " "+ std::to_string(h) + "\n255\n";
 			descr = s;
 		}
 		else
 			descr = Descr;
 	}
 
-	void setMatrix(vector<RGB> data){
+	void setMatrix(std::vector<RGB> data){
 		getMatrix().swap(data);
 	}
 
-	const string getDescr() {
+	const std::string getDescr() {
 		return descr;
 	}
 
-	void writePGM(ofstream& out) {
+	void writePGM(std::ofstream& out) {
 		out << getDescr();
 		out.write(dataptr(),datasize());
 	}
@@ -246,31 +233,31 @@ public:
 
 };
 
-string readPPM(ifstream& in,size_t &l, size_t &h,string &descr,vector<RGB> &v) {
-	string ret("");
-	string s;
+std::string readPPM(std::ifstream& in,std::size_t &l, std::size_t &h,std::string &descr,std::vector<RGB> &v) {
+	std::string ret("");
+	std::string s;
 	getline(in,s);
 	if(s.compare("P6")) {
-		cout << "Magic number sbagliato\n";
+		std::cout << "Magic number sbagliato\n";
 		return ret;
 	}
 	
 	ret.append(s + "\n");
 	getline(in,s);
 	if(s[0]!= '#'){
-		cout << "Commento sbagliato";
+		std::cout << "Commento sbagliato";
 		return "";
 	}
 	ret.append(s + "\n");
 	descr.assign(s);
 	in >> l;
-	ret.append(to_string(l)+ " ");
+	ret.append(std::to_string(l)+ " ");
 	in >> h;
-	ret.append(to_string(h)+ "\n");
+	ret.append(std::to_string(h)+ "\n");
 	getline(in,s);
 	getline(in,s);
 	if (s != "255") {
-		cout << "Terminatore sbagliato\n";
+		std::cout << "Terminatore sbagliato\n";
 		return "";
 	}
 	ret.append(s + "\n");
@@ -287,9 +274,9 @@ string readPPM(ifstream& in,size_t &l, size_t &h,string &descr,vector<RGB> &v) {
 	return ret;
 }
 
-void DimezzaR(size_t &l,size_t &h,vector<RGB> &in, vector<RGB> &out, bool interpolazione = false) {
+void DimezzaR(std::size_t &l,std::size_t &h,std::vector<RGB> &in, std::vector<RGB> &out, bool interpolazione = false) {
 	bool m = false;
-	vector<RGB> v;
+	std::vector<RGB> v;
 	v.clear();
 	if (l % 2 ) {
 		int i = 0;
@@ -305,7 +292,7 @@ void DimezzaR(size_t &l,size_t &h,vector<RGB> &in, vector<RGB> &out, bool interp
 	}
 
 	if (h % 2) {
-		cout << "Aggiungo colonna\n";
+		std::cout << "Aggiungo colonna\n";
 		for( auto &x : in) {
 			v.push_back(x);
 		}
@@ -329,9 +316,9 @@ void DimezzaR(size_t &l,size_t &h,vector<RGB> &in, vector<RGB> &out, bool interp
 	RGB p(0,0,0);
 	if(!interpolazione) {
 		//metodo rustico
-		//prendo i il pixel e i 3 intorno e ne faccio la media in R, G , B
-		for(size_t y=0; y < h-1; y+=2) {
-			for (size_t x = 0; x < l-1; x+=2) {
+		/*prendo i il pixel e i 3 intorno e ne faccio la media in R, G , B*/
+		for(std::size_t y=0; y < h-1; y+=2) {
+			for (std::size_t x = 0; x < l-1; x+=2) {
 				R = (v[y*l+x].getR()+  v[y*l+x+1].getR() + v[(y+1)*l+x].getR() + v[(y+1)*l+x+1].getR())/4 ;
 				G = (v[y*l+x].getG()+  v[y*l+x+1].getG() + v[(y+1)*l+x].getG() + v[(y+1)*l+x+1].getG())/4 ;
 				B = (v[y*l+x].getB()+  v[y*l+x+1].getB() + v[(y+1)*l+x].getB() + v[(y+1)*l+x+1].getB())/4 ;
@@ -344,9 +331,9 @@ void DimezzaR(size_t &l,size_t &h,vector<RGB> &in, vector<RGB> &out, bool interp
 	}
 	else{	
 		//interpolazione
-		//faccio l'interpolazione del pixel e dei 3 pixel intorno assegnado dei pesi
-		for(size_t y = 0; y < h; y+=2) {
-			for (size_t x = 0; x < l; x+=2) {
+		/*faccio l'interpolazione del pixel e dei 3 pixel intorno assegnado dei pesi*/
+		for(std::size_t y = 0; y < h; y+=2) {
+			for (std::size_t x = 0; x < l; x+=2) {
 				if((x==l-1 && y == 0) || (x==l-1 && y ==h-2)) {
 					R = a*v[y*l+x].getR() + b*v[y*l+x].getR() + c*v[y*l+x].getR() + d*v[y*l+x].getR();
 					G = a*v[y*l+x].getG() + b*v[y*l+x].getG() + c*v[y*l+x].getG() + d*v[y*l+x].getG();
@@ -382,44 +369,4 @@ void DimezzaR(size_t &l,size_t &h,vector<RGB> &in, vector<RGB> &out, bool interp
 	h = h/2;
 	
 }
-*/
-
-
-int main(int argc,char **argv) {
-
-	cout << "APERTURA STREAM INPUT - OUTPUT\n";
-	ofstream out("rana_rustic.ppm", ios::binary);
-	ofstream out2("rana_inter.ppm", ios::binary);
-	ifstream in("rana.ppm", ios::binary);
-	if(!in || ! out || !out2) {
-		cout << "Errore apertura stream\n";
-		return EXIT_FAILURE;
-	}
-
-	cout << "LETTURA PPM\n";
-	size_t l,h;
-	vector<RGB> v;
-	vector<RGB> mezzo;
-	string d;
-	string descr(readPPM(in,l,h,d,v));
-
-	cout << "DIMEZZAMENTO RUSTICO\n";
-	DimezzaR(l,h,v,mezzo);
-	imagePPM i(h,l,"Rana Dimezzata con pastorizia",false);
-	i.setMatrix(mezzo);
-	i.writePGM(out);
-
-	cout << "INTERPOLAZIONE\n";
-	mezzo.clear();
-	l = 375;
-	h = 266;
-	DimezzaR(l,h,v,mezzo,true);
-	imagePPM ii(h,l,d,false);
-	ii.setMatrix(mezzo);
-	cout << "SCRITTURA PPM\n";
-	ii.writePGM(out2);
-
-	return EXIT_SUCCESS;
-}
-
-
+#endif
