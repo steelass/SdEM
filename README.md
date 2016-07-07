@@ -24,3 +24,5 @@ Sistemi di Elaborazione Multimediale
 2016 - 06 - 09 -> Esame 20150609: PPM and Interpolation with 2nd Laplacian
 
 2016 - 06 - 18 -> Esame 20150218: Huffman (variable lenght code)
+
+2016 - 07 - 07 -> Esame 20150707: Huffman, vlc and bitreader
