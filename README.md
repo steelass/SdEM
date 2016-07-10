@@ -26,3 +26,5 @@ Sistemi di Elaborazione Multimediale
 2016 - 06 - 18 -> Esame 20150218: Huffman (variable lenght code)
 
 2016 - 07 - 07 -> Esame 20150707: Huffman, vlc and bitreader
+
+2016 - 07 - 10 -> Esame 20160606: Huffman, PPM, reading images and bitreader
